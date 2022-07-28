@@ -1,0 +1,255 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id  String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email String  @unique
+  password String  
+  created_at DateTime
+  updated_at DateTime
+  role_id String 
+  role Role @relation(fields: [role_id], references: [id])
+  account Account?
+}
+
+model Role {
+  id  String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name String  @unique
+  description String  
+  builtIn Boolean  @default(false)
+  role_create_for_user_id String
+  created_at DateTime
+  updated_at DateTime
+  users User[]
+  permissions Permission[]
+}
+
+
+model Permission {
+  id  String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name String  @unique
+  description String  
+  created_at DateTime
+  updated_at DateTime
+  roles Role[]
+}
+
+enum StatusAccount {
+  active
+  inactive
+  block
+  desactive
+}
+
+model Address {
+  id  String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  zip_code Int
+  street String
+  city String
+  state String
+  house_number Int
+  created_at DateTime
+  updated_at DateTime
+  account  Account @relation(fields: [account_id], references: [id])
+  account_id String
+  order Order[]
+}
+
+model Account {
+  id  String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name String
+  avatar_url String  
+  status StatusAccount
+  created_at DateTime
+  updated_at DateTime
+  addresses Address[]
+  user User @relation(fields: [user_id], references: [id])
+  user_id String @unique
+  shoppingCart ShoppingCart?
+  reviews Review[]
+  orders Order[]
+}
+
+enum OrderStatus {
+  new
+  hold
+  shipped
+  delivered
+  closed
+  expired
+}
+
+model Tax {
+  id  String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name String @unique
+  price Float
+  created_at DateTime
+  updated_at DateTime
+  orders Order[]
+}
+
+enum CouponStatus {
+  active
+  inactive
+  expired
+}
+
+model Coupon {
+  id  String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name String @unique
+  descount Float
+  status CouponStatus
+  created_at DateTime
+  updated_at DateTime
+  orders Order[]
+  product Product[]
+}
+
+model Order {
+  id  String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  sku String @unique
+  total Float
+  sub_total Float
+  status OrderStatus
+  created_at DateTime
+  updated_at DateTime
+  account Account @relation(fields: [account_id], references: [id])
+  account_id String
+  address Address @relation(fields: [address_id], references: [id])
+  address_id String
+  coupon_id String
+  coupon Coupon @relation(fields: [coupon_id], references: [id])
+  taxs Tax[]
+  itens Item[]
+}
+
+model ShoppingCart {
+  id  String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  created_at DateTime
+  updated_at DateTime
+  account_id String @unique
+  account Account @relation(fields: [account_id], references: [id])
+  item Item[]
+}
+
+model Review {
+  id  String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  title String
+  description String
+  rating Float
+  created_at DateTime
+  updated_at DateTime
+  account Account @relation(fields: [account_id], references: [id])
+  account_id String @unique
+  product Product @relation(fields: [product_id], references: [id])
+  product_id String @unique
+}
+
+
+model Item {
+  id  String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  quantity Int
+  created_at DateTime
+  updated_at DateTime
+  shoppingCart ShoppingCart @relation(fields: [shopping_cart_id], references: [id])
+  shopping_cart_id String @unique
+  product Product @relation(fields: [product_id], references: [id])
+  product_id String
+  order_id String @unique
+  order Order @relation(fields: [order_id], references: [id])
+}
+
+enum ProductStatus {
+  active
+  inactive
+  soldOff
+  opening
+  pending
+  review
+}
+
+model Category {
+  id  String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name String
+  created_at DateTime
+  updated_at DateTime
+  subCategories SubCategory[]
+}
+
+model SubCategory {
+  id  String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name String
+  created_at DateTime
+  updated_at DateTime
+  products Product[]
+  category_id String
+  category Category @relation(fields: [category_id], references: [id])
+}
+
+model Image {
+  id  String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  url String @unique
+  alt String?
+  created_at DateTime
+  updated_at DateTime
+  imagesProduct ImageProduct[]
+}
+
+model ImageProduct {
+  id  String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  created_at DateTime
+  updated_at DateTime
+  images Image[]
+  product Product?
+  colors Color[]
+}
+
+model Color {
+  id  String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name String
+  color_hex String
+  created_at DateTime
+  updated_at DateTime
+  products Product[]
+  imagesProducts ImageProduct[]
+}
+
+model Size {
+  id  String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name String
+  created_at DateTime
+  updated_at DateTime
+  products Product[]
+}
+
+
+model Product {
+  id  String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  sku String
+  name String
+  description String
+  stock Int
+  status ProductStatus
+  price Float
+  previous_price Float
+  rating_average Float
+  created_at DateTime
+  updated_at DateTime
+  reviews Review[]
+  subCategories SubCategory[]
+  itens Item[]
+  coupons Coupon[]
+  colors Color[]
+  sizes Size[]
+  images_id String @unique
+  images ImageProduct @relation(fields: [images_id], references: [id])
+}

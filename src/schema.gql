@@ -1,0 +1,133 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Permission {
+  id: ID!
+  name: String!
+  description: String!
+  roles: [Role!]
+}
+
+type Role {
+  id: ID!
+  name: String!
+  description: String!
+  builtIn: Boolean!
+  role_create_for_user_id: String!
+  users: [User!]
+  permissions: [Permission!]
+}
+
+type User {
+  id: ID!
+
+  """Identifies the date and time when the object was created."""
+  createdAt: DateTime!
+
+  """Identifies the date and time when the object was last updated."""
+  updatedAt: DateTime!
+  email: String!
+  roles: [Role!]
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type Token {
+  """JWT access token"""
+  accessToken: JWT!
+
+  """JWT refresh token"""
+  refreshToken: JWT!
+}
+
+"""
+A field whose value is a JSON Web Token (JWT): https://jwt.io/introduction.
+"""
+scalar JWT
+
+type Auth {
+  """JWT access token"""
+  accessToken: JWT!
+
+  """JWT refresh token"""
+  refreshToken: JWT!
+}
+
+type Query {
+  users: [User!]!
+  user: User!
+  findUser(data: FindUserInput!): User!
+  findUserById(id: String!): User!
+  findUserByEmail(email: String!): User!
+  roles: [Role!]!
+  roleById(id: String!): Role!
+  roleByName(name: String!): Role!
+  permissions: [Permission!]!
+  permissionById(id: String!): [Permission!]!
+  permissionByName(name: String!): Permission!
+}
+
+input FindUserInput {
+  id: String
+  email: String
+}
+
+type Mutation {
+  updateUser(data: UpdateUserInput!): User!
+  signup(data: SignupInput!): Auth!
+  login(data: LoginInput!): Auth!
+  refreshToken(token: String!): Token!
+  createRole(data: CreateRoleInput!): Role!
+  updateRole(data: UpdateRoleInput!): Role!
+  deleteRole(id: String!): Role!
+  addPermissionsAtRole(data: AddPermissionsInRolesInput!): Role!
+  createPermission(data: CreatePermissionInput!): Permission!
+  updatePermission(data: UpdatePermissionInput!): Permission!
+  deletePermission(id: String!): Permission!
+}
+
+input UpdateUserInput {
+  email: String
+  password: String
+}
+
+input SignupInput {
+  email: String!
+  password: String!
+}
+
+input LoginInput {
+  email: String!
+  password: String!
+}
+
+input CreateRoleInput {
+  name: String!
+  description: String!
+}
+
+input UpdateRoleInput {
+  id: String!
+  name: String
+  description: String!
+}
+
+input AddPermissionsInRolesInput {
+  id: String!
+  permissions_id: [String!]
+}
+
+input CreatePermissionInput {
+  name: String!
+  description: String!
+}
+
+input UpdatePermissionInput {
+  id: String!
+  name: String
+  description: String
+}

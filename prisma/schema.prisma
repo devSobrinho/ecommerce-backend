@@ -11,245 +11,261 @@ datasource db {
 }
 
 model User {
-  id  String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  @@map("user")
+  id  String  @id @default(uuid())
   email String  @unique
   password String  
-  created_at DateTime
-  updated_at DateTime
-  role_id String 
-  role Role @relation(fields: [role_id], references: [id])
-  account Account?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  roles Role[]
 }
 
 model Role {
-  id  String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name String  @unique
+  @@map("role")
+  id  String @id @default(uuid())
+  name String @unique
   description String  
   builtIn Boolean  @default(false)
   role_create_for_user_id String
-  created_at DateTime
-  updated_at DateTime
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
   users User[]
   permissions Permission[]
 }
 
 
 model Permission {
-  id  String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  @@map("permission")
+  id  String @id @default(uuid())
   name String  @unique
   description String  
-  created_at DateTime
-  updated_at DateTime
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
   roles Role[]
 }
 
-enum StatusAccount {
-  active
-  inactive
-  block
-  desactive
-}
+// enum StatusAccount {
+//   active
+//   inactive
+//   block
+//   desactive
+// }
 
-model Address {
-  id  String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  zip_code Int
-  street String
-  city String
-  state String
-  house_number Int
-  created_at DateTime
-  updated_at DateTime
-  account  Account @relation(fields: [account_id], references: [id])
-  account_id String
-  order Order[]
-}
+// model Address {
+//   @@map("address")
+//   id  String  @id @default(uuid())
+//   zip_code Int
+//   street String
+//   city String
+//   state String
+//   house_number Int
+//   createdAt DateTime  @default(now())
+//   updatedAt DateTime  @updatedAt
+//   account  Account @relation(fields: [account_id], references: [id])
+//   account_id String
+//   order Order[]
+// }
 
-model Account {
-  id  String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name String
-  avatar_url String  
-  status StatusAccount
-  created_at DateTime
-  updated_at DateTime
-  addresses Address[]
-  user User @relation(fields: [user_id], references: [id])
-  user_id String @unique
-  shoppingCart ShoppingCart?
-  reviews Review[]
-  orders Order[]
-}
+// model Account {
+//   @@map("account")
+//   id  String  @id @default(uuid())
+//   name String
+//   avatar_url String  
+//   status StatusAccount
+//   createdAt DateTime  @default(now())
+//   updatedAt DateTime  @updatedAt
+//   addresses Address[]
+//   user User @relation(fields: [user_id], references: [id])
+//   user_id String @unique
+//   shoppingCart ShoppingCart?
+//   reviews Review[]
+//   orders Order[]
+// }
 
-enum OrderStatus {
-  new
-  hold
-  shipped
-  delivered
-  closed
-  expired
-}
+// enum OrderStatus {
+//   new
+//   hold
+//   shipped
+//   delivered
+//   closed
+//   expired
+// }
 
-model Tax {
-  id  String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name String @unique
-  price Float
-  created_at DateTime
-  updated_at DateTime
-  orders Order[]
-}
+// model Tax {
+//   @@map("tax")
+//   id  String  @id @default(uuid())
+//   name String @unique
+//   price Float
+//   createdAt DateTime  @default(now())
+//   updatedAt DateTime  @updatedAt
+//   orders Order[]
+// }
 
-enum CouponStatus {
-  active
-  inactive
-  expired
-}
+// enum CouponStatus {
+//   active
+//   inactive
+//   expired
+// }
 
-model Coupon {
-  id  String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name String @unique
-  descount Float
-  status CouponStatus
-  created_at DateTime
-  updated_at DateTime
-  orders Order[]
-  product Product[]
-}
+// model Coupon {
+//   @@map("coupon")
+//   id  String  @id @default(uuid())
+//   name String @unique
+//   descount Float
+//   status CouponStatus
+//   createdAt DateTime  @default(now())
+//   updatedAt DateTime  @updatedAt
+//   orders Order[]
+//   product Product[]
+// }
 
-model Order {
-  id  String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  sku String @unique
-  total Float
-  sub_total Float
-  status OrderStatus
-  created_at DateTime
-  updated_at DateTime
-  account Account @relation(fields: [account_id], references: [id])
-  account_id String
-  address Address @relation(fields: [address_id], references: [id])
-  address_id String
-  coupon_id String
-  coupon Coupon @relation(fields: [coupon_id], references: [id])
-  taxs Tax[]
-  itens Item[]
-}
+// model Order {
+//   @@map("order")
+//   id  String  @id @default(uuid())
+//   sku String @unique
+//   total Float
+//   sub_total Float
+//   status OrderStatus
+//   createdAt DateTime  @default(now())
+//   updatedAt DateTime  @updatedAt
+//   account Account @relation(fields: [account_id], references: [id])
+//   account_id String
+//   address Address @relation(fields: [address_id], references: [id])
+//   address_id String
+//   coupon_id String
+//   coupon Coupon @relation(fields: [coupon_id], references: [id])
+//   taxs Tax[]
+//   itens Item[]
+// }
 
-model ShoppingCart {
-  id  String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  created_at DateTime
-  updated_at DateTime
-  account_id String @unique
-  account Account @relation(fields: [account_id], references: [id])
-  item Item[]
-}
+// model ShoppingCart {
+//   @@map("shoppingcart")
+//   id  String  @id @default(uuid())
+//   createdAt DateTime  @default(now())
+//   updatedAt DateTime  @updatedAt
+//   account_id String @unique
+//   account Account @relation(fields: [account_id], references: [id])
+//   item Item[]
+// }
 
-model Review {
-  id  String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  title String
-  description String
-  rating Float
-  created_at DateTime
-  updated_at DateTime
-  account Account @relation(fields: [account_id], references: [id])
-  account_id String @unique
-  product Product @relation(fields: [product_id], references: [id])
-  product_id String @unique
-}
-
-
-model Item {
-  id  String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  quantity Int
-  created_at DateTime
-  updated_at DateTime
-  shoppingCart ShoppingCart @relation(fields: [shopping_cart_id], references: [id])
-  shopping_cart_id String @unique
-  product Product @relation(fields: [product_id], references: [id])
-  product_id String
-  order_id String @unique
-  order Order @relation(fields: [order_id], references: [id])
-}
-
-enum ProductStatus {
-  active
-  inactive
-  soldOff
-  opening
-  pending
-  review
-}
-
-model Category {
-  id  String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name String
-  created_at DateTime
-  updated_at DateTime
-  subCategories SubCategory[]
-}
-
-model SubCategory {
-  id  String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name String
-  created_at DateTime
-  updated_at DateTime
-  products Product[]
-  category_id String
-  category Category @relation(fields: [category_id], references: [id])
-}
-
-model Image {
-  id  String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  url String @unique
-  alt String?
-  created_at DateTime
-  updated_at DateTime
-  imagesProduct ImageProduct[]
-}
-
-model ImageProduct {
-  id  String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  created_at DateTime
-  updated_at DateTime
-  images Image[]
-  product Product?
-  colors Color[]
-}
-
-model Color {
-  id  String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name String
-  color_hex String
-  created_at DateTime
-  updated_at DateTime
-  products Product[]
-  imagesProducts ImageProduct[]
-}
-
-model Size {
-  id  String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name String
-  created_at DateTime
-  updated_at DateTime
-  products Product[]
-}
+// model Review {
+//   @@map("review")
+//   id  String  @id @default(uuid())
+//   title String
+//   description String
+//   rating Float
+//   createdAt DateTime  @default(now())
+//   updatedAt DateTime  @updatedAt
+//   account Account @relation(fields: [account_id], references: [id])
+//   account_id String @unique
+//   product Product @relation(fields: [product_id], references: [id])
+//   product_id String @unique
+// }
 
 
-model Product {
-  id  String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  sku String
-  name String
-  description String
-  stock Int
-  status ProductStatus
-  price Float
-  previous_price Float
-  rating_average Float
-  created_at DateTime
-  updated_at DateTime
-  reviews Review[]
-  subCategories SubCategory[]
-  itens Item[]
-  coupons Coupon[]
-  colors Color[]
-  sizes Size[]
-  images_id String @unique
-  images ImageProduct @relation(fields: [images_id], references: [id])
-}
+// model Item {
+//   @@map("item")
+//   id  String  @id @default(uuid())
+//   quantity Int
+//   createdAt DateTime  @default(now())
+//   updatedAt DateTime  @updatedAt
+//   shoppingCart ShoppingCart @relation(fields: [shopping_cart_id], references: [id])
+//   shopping_cart_id String @unique
+//   product Product @relation(fields: [product_id], references: [id])
+//   product_id String
+//   order_id String @unique
+//   order Order @relation(fields: [order_id], references: [id])
+// }
+
+// enum ProductStatus {
+//   active
+//   inactive
+//   soldOff
+//   opening
+//   pending
+//   review
+// }
+
+// model Category {
+//   @@map("category")
+//   id  String  @id @default(uuid())
+//   name String
+//   createdAt DateTime  @default(now())
+//   updatedAt DateTime  @updatedAt
+//   subCategories SubCategory[]
+// }
+
+// model SubCategory {
+//   @@map("subcategory")
+//   id  String  @id @default(uuid())
+//   name String
+//   createdAt DateTime  @default(now())
+//   updatedAt DateTime  @updatedAt
+//   products Product[]
+//   category_id String
+//   category Category @relation(fields: [category_id], references: [id])
+// }
+
+// model Image {
+//   @@map("image")
+//   id  String  @id @default(uuid())
+//   url String @unique
+//   alt String?
+//   createdAt DateTime  @default(now())
+//   updatedAt DateTime  @updatedAt
+//   imagesProduct ImageProduct[]
+// }
+
+// model ImageProduct {
+//   @@map("imageproduct")
+//   id  String  @id @default(uuid())
+//   createdAt DateTime  @default(now())
+//   updatedAt DateTime  @updatedAt
+//   images Image[]
+//   product Product?
+//   colors Color[]
+// }
+
+// model Color {
+//   @@map("color")
+//   id  String  @id @default(uuid())
+//   name String
+//   color_hex String
+//   createdAt DateTime  @default(now())
+//   updatedAt DateTime  @updatedAt
+//   products Product[]
+//   imagesProducts ImageProduct[]
+// }
+
+// model Size {
+//   @@map("size")
+//   id  String  @id @default(uuid())
+//   name String
+//   createdAt DateTime  @default(now())
+//   updatedAt DateTime  @updatedAt
+//   products Product[]
+// }
+
+
+// model Product {
+//   @@map("product")
+//   id  String  @id @default(uuid())
+//   sku String
+//   name String
+//   description String
+//   stock Int
+//   status ProductStatus
+//   price Float
+//   previous_price Float
+//   rating_average Float
+//   createdAt DateTime  @default(now())
+//   updatedAt DateTime  @updatedAt
+//   reviews Review[]
+//   subCategories SubCategory[]
+//   itens Item[]
+//   coupons Coupon[]
+//   colors Color[]
+//   sizes Size[]
+//   images_id String @unique
+//   images ImageProduct @relation(fields: [images_id], references: [id])
+// }
